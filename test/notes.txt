@@ -10,4 +10,5 @@ curl --location 'http://127.0.0.1:5000/add-stock/' \
 }'
 
 
+
 FLASK_APP=app/app.py python3 -m flask run

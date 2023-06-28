@@ -53,6 +53,14 @@ class TestClass:
     #     data_json = json.dumps(stock_data)
 
 
+    # def test_get_stock_by_ticker_conversion_integration(self):
+
+    #     response = self.client.get(
+    #         f"/stock/conversion/APPL/GBP",
+    #         content_type="application/json"
+    #     )
+
+
     # def test_add_stock_duplicate_rejected(self):
 
     #     prices = [

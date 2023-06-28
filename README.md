@@ -750,6 +750,77 @@ Rerunning the tests will continue to pass. This is an example of how TDD can hel
 
 ### Step 12
 
+Lets implement an integration test for our duplication feature in project/tdd_stock/test/test_int.py. Uncomment test_add_stock_duplicate_rejected
+
+```python
+
+    def test_add_stock_duplicate_rejected(self):
+
+        prices = [
+            {
+                "date": "2022-01-01",
+                "value": 201
+            },
+            {
+                "date": "2022-01-02",
+                "value": 199
+            },
+            {
+                "date": "2022-01-03",
+                "value": 205
+            },
+            {
+                "date": "2022-01-04",
+                "value": 205
+            },
+            {
+                "date": "2022-01-05",
+                "value": 206
+            }
+        ]
+
+        stock =  Stock("dave","Microsoft","MSFT",prices)
+        data_json = stock.__dict__
+        
+        data_json = json.dumps(data_json)
+        response = self.client.post(
+            "/add-stock/",
+            data = data_json,
+            content_type = "application/json"
+        )
+```
+
+We will add a response code check to our test.
+
+```python
+    assert response.status_code ==400
+```
+
+This failing test can be fixed in the route function found in project/tdd_stock/app/app.py
+
+```python
+@app.route("/add-stock/",methods=["POST"])
+def add_stock_to_db():
+    # try catch for error
+    try:
+        save_stock(request.json)
+        resp = jsonify(success=True)
+        return resp
+    except Exception as e:
+        return Response(f'{str(e)}',status=400)
+```
+
+The test now passes.
+
+We can also add a further assertion to check the error message
+
+```python
+    assert response.data == b'MSFT already exists'
+```
+
+
+### Step 13
+
 That last requirement to meet is to convert a stocks prices by a given currency code. The function will take a ticker symbol and a currency code. A Stock object is returned with the stock retrieved from the DB and the prices updated with the exchange rate for that currency code.
 
 Go to project/tdd_stock/test/test_unit.py
@@ -767,3 +838,112 @@ uncomment test_convert_currency_is_correct
 
         # lambda with value
 ```
+
+The starter code uses the requests library to make a get request to open.er-api.com api. This is an API that returns currency excahnge rates relative to USD.
+We then go to the 'rates' dictionary and get the exchange rate for 'GBP'
+We want to test that the stock returned from get_stock_with_conversion has the ticker_symbol 'APPL' and that the prices returned are what we calculate.
+
+The first thing we need to do is generate our expected prices.
+
+```python
+    prices = stock_expected.prices
+
+    expected_prices = list(map(lambda x:x['value'] * exchange_rate, prices))
+```
+
+We then want to call the fucntion and assert that expected_prices are the same as the actual prices returned.
+
+```python
+    stock_actual = get_stock_with_conversion('APPL', 'GBP')
+
+    assert expected_prices == stock_actual.prices
+    assert stock_actual.ticker_symbol == 'APPL'
+```
+
+In project/tdd_stock/app/components.py uncomment get_stock_with_conversion(ticker_symbol,conversion)
+
+```python
+    def get_stock_with_conversion(ticker_symbol,conversion):
+
+        response = requests.get("https://open.er-api.com/v6/latest/USD")
+        response = response.json()
+        rates = response['rates']
+        exchange_rate =rates[conversion]
+
+        stock = get_stock_by_ticker(ticker_symbol)
+
+        converted_prices = list(map(lambda x:x["value"]* exchange_rate,stock.prices))
+        stock.prices = converted_prices
+```
+
+In project/tdd_stock/test/test_unit.py import the function
+
+```python
+from app.components import get_all_stocks, get_stock_by_ticker, save_stock, get_stock_with_conversion
+```
+
+This test returns the error
+
+```
+test_convert_currency_is_correct Failed: [undefined]AttributeError: 'NoneType' object has no attribute 'prices'
+```
+
+Lets go to our application code in project/tdd_stock/app/components.py
+The function is not treturning anything. All we need to is return the stock
+
+```python
+return stock
+```
+
+the test will now pass
+
+### Step 14
+
+We will now write an integration test for the route using get_stock_with_conversion
+
+```python
+    def test_get_stock_by_ticker_conversion_integration(self):
+
+        response = self.client.get(
+            f"/stock/conversion/APPL/GBP",
+            content_type="application/json"
+        )
+
+        json_response = response.json
+        stock = Stock(**json_response)
+        assert stock.ticker_symbol == 'APPL'
+        assert response.status_code ==200
+```
+
+This test will fail as the route has not been implemented yet.
+In project/tdd_stock/app/app.py uncomment @app.route("/stock/conversion/<ticker_symbol>/<conversion>", methods=["GET"])
+
+```python
+    @app.route("/stock/conversion/<ticker_symbol>/<conversion>", methods=["GET"])
+    def get_stock_by_conversion(ticker_symbol,conversion):
+        pass
+
+```
+
+We need to call the get_stock_with_conversion function return the response
+
+```python
+    @app.route("/stock/conversion/<ticker_symbol>/<conversion>", methods=["GET"])
+    def get_stock_by_conversion(ticker_symbol,conversion):
+        stock = get_stock_with_conversion(ticker_symbol,conversion)
+        if stock:
+            return jsonify(stock.__dict__)
+        else:
+            return jsonify(None)
+```
+
+The test now passes.
+
+### Step 15
+
+We can now start up the application on the server and try some curl commands.
+
+
+```bash
+    FLASK_APP=app/app.py python3 -m flask run
+``` 
