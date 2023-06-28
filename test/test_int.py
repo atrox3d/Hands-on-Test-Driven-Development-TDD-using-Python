@@ -12,12 +12,12 @@ class TestClass:
         with app.test_client() as client:
             self.client = client
 
-    # @classmethod
-    # def teardown_method(self):
-    #     original_stocks = self.return_original_stocks(self)
+    @classmethod
+    def teardown_method(self):
+        original_stocks = self.return_original_stocks(self)
 
-    #     with open('db/stock_db.json','w') as json_file:
-    #         json.dump(original_stocks,json_file,indent=4,separators= (',',': '))
+        with open('project/tdd_stock/db/stock_db.json','w') as json_file:
+            json.dump(original_stocks,json_file,indent=4,separators= (',',': '))
 
     
     def test_get_all_stocks(self):
@@ -36,6 +36,13 @@ class TestClass:
         # json_response = response.json
         # stock = Stock(**json_response)
         # assert stock.ticker_symbol == 'APPL'
+
+    # def test_get_stock_by_bad_ticker_integration(self):
+
+    #     response = self.client.get(
+    #         f"/stock/TSLA/",
+    #         content_type="application/json"
+    #     )
 
 
     # def test_add_stock_integration(self):

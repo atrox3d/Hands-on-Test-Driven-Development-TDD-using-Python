@@ -419,6 +419,50 @@ The test now passes
 
 ### Step 8
 
+We can now write a test to see how this function is used within a route.
+
+Go to project/tdd_stock/test/test_int.py uncomment the test_get_stock_by_bad_ticker_integration test
+
+```python
+    def test_get_stock_by_bad_ticker_integration(self):
+
+        response = self.client.get(
+            f"/stock/TSLA/",
+            content_type="application/json"
+        )
+```
+
+We expect this route to return a 200 response and the json conent to be None when making a call with an invalid ticker_symbol
+
+```python
+    def test_get_stock_by_bad_ticker_integration(self):
+
+        response = self.client.get(
+            f"/stock/TSLA/",
+            content_type="application/json"
+        )
+
+        assert response.status_code == 200
+        assert response.json == None
+```
+We can pass this failing test by uncommenting the if statement in
+
+```python
+@app.route("/stock/<ticker_symbol>/",methods=["GET"])
+def get_stock_by_ticker_symbol(ticker_symbol):
+    
+    stock = get_stock_by_ticker(ticker_symbol)
+    if stock:
+        return jsonify(stock.__dict__)
+    else:
+        return jsonify(None)
+
+```
+
+This test will now pass
+
+### Step 9
+
 The next requirement is to add a stock to the DB. Lets think about how to test that.
 
 Go to test/test_unit.py
@@ -488,13 +532,15 @@ def save_stock(stock_to_save):
     stock_list_obj = list(map(lambda x:Stock(**x), stock_list))
 
     stock_obj = Stock(**stock_to_save)
+
+    # if get_stock_by_ticker(stock_obj.ticker_symbol):
+    #     raise Exception(f"{stock_obj.ticker_symbol} already exists")
+    # else:
     stock_list_obj.append(stock_obj)
 
     stock_list_json = list(map(lambda x: vars(x), stock_list_obj))
     with open('project/tdd_stock/db/stock_db.json','w') as json_db:
         json.dump(stock_list_json,json_db,sort_keys=True, indent=4, separators=(',', ': '))
-    # else:
-    #     raise Exception(f"{stock_obj.ticker_symbol} already exists")
 ```
 
 The test should now pass. We can now add a further assertion to check that the new stock is added.
@@ -516,7 +562,7 @@ The test should now pass. We can now add a further assertion to check that the n
 This proves that the last entry in the DB was stock from the test data.
 If you go to the DB file, you'll notice that you can't see the new stock in the file. This is because the unit test has a teadDown function that automatically removes the entry after the test. This allows you to run the test repeatedly without it growing the DB. This will become important when we implement a duplication check later
 
-### Step 9
+### Step 10
 
 Lets now use this function in a route.
 
@@ -532,6 +578,26 @@ Go to project/tdd_stock/test/test_int.py. Uncomment test_add_stock_integration
 ```
 
 At a route level we want to check that the function returns a 200 response when we call the endpoint.
+
+
+```python
+
+    def test_add_stock_integration(self):
+
+        with open('project/tdd_stock/test/test_data/stock_test.json') as f:
+            stock_data = json.load(f)
+
+        data_json = json.dumps(stock_data)
+
+        response = self.client.post(
+            f"/add-stock/",
+            content_type="application/json"
+            ,data = data_json
+        )
+
+        assert response.status_code == 200
+```
+
 Uncomment @app.route("/add-stock/",methods=["POST"]) in app/app.py
 
 ```python
@@ -551,4 +617,153 @@ Import the function too
 ```python
 from app.components import get_all_stocks, get_stock_by_ticker, save_stock
 
+```
+The test will now pass.
+
+### Step 10
+
+If the DB already has a ticker_symbol that we want to add, we want our application to reject it. Lets write a test for this.
+
+Go to test/test_unit.py. Uncomment test_save_duplicate_stock_rejected
+
+```python
+    def test_save_duplicate_stock_rejected(self):
+        prices = [
+            {
+                "date": "2022-01-01",
+                "value": 201
+            },
+            {
+                "date": "2022-01-02",
+                "value": 199
+            },
+            {
+                "date": "2022-01-03",
+                "value": 205
+            },
+            {
+                "date": "2022-01-04",
+                "value": 205
+            },
+            {
+                "date": "2022-01-05",
+                "value": 206
+            }
+        ]
+
+        # create stock and convert to __dict__
+
+        # with pytest.raises(Exception, match="MSFT already exists") as excp:
+        #     save_stock(data_json)
+```
+
+The prices variable is a list of dictioanries. each key value pair is a date and price. We will use prices in the creation of a new stock.
+
+```python
+        # create stock and convert to __dict__
+        stock = Stock(analyst='bill.gates', name='Microsoft', ticker_symbol='MSFT', prices=prices)
+        data_json = stock.__dict__
+```
+
+We then want to catch an exception and assert the correct error message. Uncomment this part
+
+```python
+    with pytest.raises(Exception, match="MSFT already exists") as excp:
+        save_stock(data_json)
+```
+
+Running this test will fail with this error message
+
+'''
+test_save_duplicate_stock_rejected Failed: [undefined]Failed: DID NOT RAISE <class 'Exception'>
+'''
+
+Lets go to our add_stock function and fix that. Go to project/tdd_stock/app/components.py
+
+We are going to need to implement an if statement that checks if a stock exists based on the ticker_symbol provided.
+
+
+```python
+def save_stock(stock_to_save):
+    with open('project/tdd_stock/db/stock_db.json','r') as json_db:
+        stock_list = json.load(json_db)
+    stock_list_obj = list(map(lambda x:Stock(**x), stock_list))
+
+    stock_obj = Stock(**stock_to_save)
+
+    if get_stock_by_ticker(stock_obj.ticker_symbol):
+        raise Exception(f"{stock_obj.ticker_symbol} already exists")
+    else:
+        stock_list_obj.append(stock_obj)
+
+        stock_list_json = list(map(lambda x: vars(x), stock_list_obj))
+        with open('project/tdd_stock/db/stock_db.json','w') as json_db:
+            json.dump(stock_list_json,json_db,sort_keys=True, indent=4, separators=(',', ': '))
+```
+
+The if statment uses the previously implemented get_stock_by_ticker function. If None is return then we know the ticker_symbok is not in the DB. If however we do get an entry, the the stock already exists and we raise an exception.
+
+Running the test again will pass.
+
+### Step 11
+
+Let do some refactoring on save_stock.
+
+We can see that its opening the DB and converting it to a list of stocks. This was already implementted in the save_stock function. We can repalce our existing code with that.
+
+```python
+def save_stock(stock_to_save):
+
+    stock_list_obj = get_all_stocks()
+    stock_obj = Stock(**stock_to_save)
+
+    if get_stock_by_ticker(stock_obj.ticker_symbol):
+        raise Exception(f"{stock_obj.ticker_symbol} already exists")
+    else:
+        stock_list_obj.append(stock_obj)
+
+        stock_list_json = list(map(lambda x: vars(x), stock_list_obj))
+        with open('project/tdd_stock/db/stock_db.json','w') as json_db:
+            json.dump(stock_list_json,json_db,sort_keys=True, indent=4, separators=(',', ': '))
+            
+```
+
+we can also make the code abit more efficient by moving it to the else clause so that we only access the DB when we need to.
+
+```python
+def save_stock(stock_to_save):
+
+    stock_obj = Stock(**stock_to_save)
+
+    if get_stock_by_ticker(stock_obj.ticker_symbol):
+        raise Exception(f"{stock_obj.ticker_symbol} already exists")
+    else:
+        stock_list_obj = get_all_stocks()
+        stock_list_obj.append(stock_obj)
+
+        stock_list_json = list(map(lambda x: vars(x), stock_list_obj))
+        with open('project/tdd_stock/db/stock_db.json','w') as json_db:
+            json.dump(stock_list_json,json_db,sort_keys=True, indent=4, separators=(',', ': '))   
+```
+
+Rerunning the tests will continue to pass. This is an example of how TDD can help you test as you go along and catch regressions sooner.
+
+### Step 12
+
+That last requirement to meet is to convert a stocks prices by a given currency code. The function will take a ticker symbol and a currency code. A Stock object is returned with the stock retrieved from the DB and the prices updated with the exchange rate for that currency code.
+
+Go to project/tdd_stock/test/test_unit.py
+
+uncomment test_convert_currency_is_correct
+
+```python
+    def test_convert_currency_is_correct(self):
+
+        response = requests.get("https://open.er-api.com/v6/latest/USD")
+        response = response.json()
+        rates = response['rates']
+        exchange_rate =rates['GBP']
+        stock_expected = get_stock_by_ticker("APPL")
+
+        # lambda with value
 ```
