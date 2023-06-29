@@ -949,7 +949,7 @@ We can now start up the application on the server and try some curl commands.
 
 
 ```bash
-    FLASK_APP=app/app.py python3 -m flask run --host=0.0.0.0
+    FLASK_APP=app/app.py python3.11 -m flask run --host=0.0.0.0
 ``` 
 
 Open a seperate browser window and go to : http://funny-panda.devopsplayground.org:5000/stock/all_stocks/

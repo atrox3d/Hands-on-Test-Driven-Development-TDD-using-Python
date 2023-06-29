@@ -14,4 +14,4 @@ curl http://127.0.0.1:5000/stock/all_stocks
 
 http://funny-panda.devopsplayground.org:5000/stock/all_stocks/
 
-FLASK_APP=app/app.py python3 -m flask run --host=0.0.0.0
+FLASK_APP=app/app.py python3.11 -m flask run --host=0.0.0.0
