@@ -14,4 +14,6 @@ curl http://127.0.0.1:5000/stock/all_stocks
 
 http://funny-panda.devopsplayground.org:5000/stock/all_stocks/
 
+cd workdir/Hands-on-Test-Driven-Development-TDD-using-Python/
+
 FLASK_APP=app/app.py python3.11 -m flask run --host=0.0.0.0

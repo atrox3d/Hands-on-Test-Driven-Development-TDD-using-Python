@@ -947,8 +947,9 @@ The test now passes.
 
 We can now start up the application on the server and try some curl commands.
 
-
+In Wetty run the following:
 ```bash
+    cd workdir/Hands-on-Test-Driven-Development-TDD-using-Python/
     FLASK_APP=app/app.py python3.11 -m flask run --host=0.0.0.0
 ``` 
 
