@@ -4,21 +4,30 @@ import requests
 
 from app.models import Stock
 
+# outside container
+# /home/playground/workdir/Hands-on-Test-Driven-Development-TDD-using-Python/db/stock_db.json
+
+# inside container
+# 'project/Hands-on-Test-Driven-Development-TDD-using-Python/db/stock_db.json'
+
+
+db_path = 'project/Hands-on-Test-Driven-Development-TDD-using-Python/db/stock_db.json'
+
 def get_all_stocks():
 
-    with open('project/tdd_stock/db/stock_db.json') as dbfile:
+    with open(db_path) as dbfile:
         stocks_json = json.load(dbfile)
 
 
 
 def get_stock_by_ticker(ticker_symbol):
-    with open('project/tdd_stock/db/stock_db.json') as dbfile:
+    with open(db_path) as dbfile:
         stocks_json = json.load(dbfile)
 
     
 
 # def save_stock(stock_to_save):
-#     with open('project/tdd_stock/db/stock_db.json','r') as json_db:
+#     with open(db_path,'r') as json_db:
 #         stock_list = json.load(json_db)
 #     stock_list_obj = list(map(lambda x:Stock(**x), stock_list))
 
@@ -30,7 +39,7 @@ def get_stock_by_ticker(ticker_symbol):
 #     stock_list_obj.append(stock_obj)
 
 #     stock_list_json = list(map(lambda x: vars(x), stock_list_obj))
-#     with open('project/tdd_stock/db/stock_db.json','w') as json_db:
+#     with open(db_path,'w') as json_db:
 #         json.dump(stock_list_json,json_db,sort_keys=True, indent=4, separators=(',', ': '))
 
     

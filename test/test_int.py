@@ -5,6 +5,11 @@ from app.models import Stock
 
 class TestClass:
 
+
+
+    db_path = 'project/Hands-on-Test-Driven-Development-TDD-using-Python/db/stock_db.json'
+    test_stock = 'project/Hands-on-Test-Driven-Development-TDD-using-Python/db/stock_db.json'
+    
     @classmethod
     def setup_method(self):
         app.config["TESTING"] = True
@@ -16,7 +21,7 @@ class TestClass:
     def teardown_method(self):
         original_stocks = self.return_original_stocks(self)
 
-        with open('project/tdd_stock/db/stock_db.json','w') as json_file:
+        with open(self.db_path,'w') as json_file:
             json.dump(original_stocks,json_file,indent=4,separators= (',',': '))
 
     
@@ -47,7 +52,7 @@ class TestClass:
 
     # def test_add_stock_integration(self):
 
-    # with open('project/tdd_stock/test/test_data/stock_test.json') as f:
+    # with open(self.test_stock ) as f:
     #     stock_data = json.load(f)
 
     #     data_json = json.dumps(stock_data)

@@ -9,6 +9,9 @@ from app.models import Stock
 
 class StockTestClass(TestCase):
 
+    db_path = 'project/Hands-on-Test-Driven-Development-TDD-using-Python/db/stock_db.json'
+    test_stock = 'project/Hands-on-Test-Driven-Development-TDD-using-Python/db/stock_db.json'
+
     def test_get_all_stocks_returns_all(self):
         stocks = get_all_stocks()
 
@@ -24,7 +27,7 @@ class StockTestClass(TestCase):
 
     # def test_save_stock_success(self):
 
-    #     with open('project/tdd_stock/test/test_data/stock_test.json') as f:
+    #     with open(self.test_stock) as f:
     #         stock_data = json.load(f)
 
 
@@ -74,7 +77,7 @@ class StockTestClass(TestCase):
     def tearDown(self):
         original_stocks = self.return_original_stocks()
 
-        with open('project/tdd_stock/db/stock_db.json','w') as json_file:
+        with open(self.db_path,'w') as json_file:
             json.dump(original_stocks,json_file,indent=4,separators= (',',': '))
 
     def return_original_stocks(self):

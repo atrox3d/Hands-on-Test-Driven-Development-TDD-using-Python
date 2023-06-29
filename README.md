@@ -157,7 +157,7 @@ Go to app/components.py and see the get_all_stocks_function
 ```python
 def get_all_stocks():
 
-    with open('project/tdd_stock/db/stock_db.json') as dbfile:
+    with open(db_path) as dbfile:
         stocks_json = json.load(dbfile)
 ```
 
@@ -168,7 +168,7 @@ Lets return the list
 ```python
 def get_all_stocks():
 
-    with open('project/tdd_stock/db/stock_db.json') as dbfile:
+    with open(db_path) as dbfile:
         stocks_json = json.load(dbfile)
 
     return stocks_json
@@ -207,7 +207,7 @@ to Stock objects
 ```python
 def get_all_stocks():
 
-    with open('project/tdd_stock/db/stock_db.json') as dbfile:
+    with open(db_path) as dbfile:
         stocks_json = json.load(dbfile)
 
     stocks_list_obj = list(map(lambda x: Stock(**x), stocks_json))
@@ -302,7 +302,7 @@ Lets make this test go green. In project/tdd_stock/app/components.py our functio
 
 ```python
 def get_stock_by_ticker(ticker_symbol):
-    with open('project/tdd_stock/db/stock_db.json') as dbfile:
+    with open(db_path) as dbfile:
         stocks_json = json.load(dbfile)
         
     pass
@@ -313,7 +313,7 @@ We need to read the stocks and find the one that matches the ticker symbol. We w
 ```python
 
 def get_stock_by_ticker(ticker_symbol):
-    with open('project/tdd_stock/db/stock_db.json') as dbfile:
+    with open(db_path) as dbfile:
         stocks_json = json.load(dbfile)
 
     stocks_list_obj = list(map(lambda x: Stock(**x), stocks_json))
@@ -476,11 +476,11 @@ uncomment test_save_stock_success
 ```python
     def test_save_stock_success(self):
 
-    with open('project/tdd_stock/db/stock_db.json) as f:
-        stock_data = json.load(f)
+        with open(self.test_stock) as f:
+            stock_data = json.load(f)
 ```
 
-You'll notice that there is a reference to 'project/tdd_stock/db/stock_db.json' this is a test file which contains a stock object. We will use this to update the db.
+You'll notice that there is a reference to self.test_stock this is a test file which contains a stock object. We will use this to update the db.
 
 We can know if save_stock works by shceking the state of the DB after upload. if we call get_all_stocks after save_stock, we expect the lentgh of the DB to now be 4.
 
@@ -489,7 +489,7 @@ Update the test
 ```python
     def test_save_stock_success(self):
 
-        with open('project/tdd_stock/test/test_data/stock_test.json') as f:
+        with open(self.test_stock) as f:
             stock_data = json.load(f)
 
         save_stock(stock_data)
@@ -509,14 +509,14 @@ in project/tdd_stock/app/components.py uncomment save_stock
 
 ```python
 def save_stock(stock_to_save):
-    with open('project/tdd_stock/db/stock_db.json','r') as json_db:
+    with open(db_path,'r') as json_db:
         stock_list = json.load(json_db)
     # stock_list_obj = list(map(lambda x:Stock(**x), stock_list))
     # stock_obj = Stock(**stock_to_save)
     # stock_list_obj.append(stock_obj)
 
     stock_list_json = list(map(lambda x: vars(x), stock_list_obj))
-    with open('db/stock_db.json','w') as json_db:
+    with open(db_path,'w') as json_db:
         json.dump(stock_list_json,json_db,sort_keys=True, indent=4, separators=(',', ': '))
     # else:
     #     raise Exception(f"{stock_obj.ticker_symbol} already exists")
@@ -531,7 +531,7 @@ uncomment the code that does this
 
 ```python
 def save_stock(stock_to_save):
-    with open('project/tdd_stock/db/stock_db.json','r') as json_db:
+    with open(db_path,'r') as json_db:
         stock_list = json.load(json_db)
     stock_list_obj = list(map(lambda x:Stock(**x), stock_list))
 
@@ -543,7 +543,7 @@ def save_stock(stock_to_save):
     stock_list_obj.append(stock_obj)
 
     stock_list_json = list(map(lambda x: vars(x), stock_list_obj))
-    with open('project/tdd_stock/db/stock_db.json','w') as json_db:
+    with open(db_path,'w') as json_db:
         json.dump(stock_list_json,json_db,sort_keys=True, indent=4, separators=(',', ': '))
 ```
 
@@ -552,7 +552,7 @@ The test should now pass. We can now add a further assertion to check that the n
 ```python
     def test_save_stock_success(self):
 
-        with open('project/tdd_stock/test/test_data/stock_test.json') as f:
+        with open(self.test_stock) as f:
             stock_data = json.load(f)
 
         save_stock(stock_data)
@@ -575,7 +575,7 @@ Go to project/tdd_stock/test/test_int.py. Uncomment test_add_stock_integration
 ```python
     def test_add_stock_integration(self):
 
-        with open('test/test_data/stock_test.json') as f:
+        with open(self.test_stock) as f:
             stock_data = json.load(f)
 
         data_json = json.dumps(stock_data)
@@ -588,7 +588,7 @@ At a route level we want to check that the function returns a 200 response when 
 
     def test_add_stock_integration(self):
 
-        with open('project/tdd_stock/test/test_data/stock_test.json') as f:
+        with open(self.test_stock) as f:
             stock_data = json.load(f)
 
         data_json = json.dumps(stock_data)
@@ -689,7 +689,7 @@ We are going to need to implement an if statement that checks if a stock exists 
 
 ```python
 def save_stock(stock_to_save):
-    with open('project/tdd_stock/db/stock_db.json','r') as json_db:
+    with open(db_path,'r') as json_db:
         stock_list = json.load(json_db)
     stock_list_obj = list(map(lambda x:Stock(**x), stock_list))
 
@@ -701,7 +701,7 @@ def save_stock(stock_to_save):
         stock_list_obj.append(stock_obj)
 
         stock_list_json = list(map(lambda x: vars(x), stock_list_obj))
-        with open('project/tdd_stock/db/stock_db.json','w') as json_db:
+        with open(db_path,'w') as json_db:
             json.dump(stock_list_json,json_db,sort_keys=True, indent=4, separators=(',', ': '))
 ```
 
@@ -727,7 +727,7 @@ def save_stock(stock_to_save):
         stock_list_obj.append(stock_obj)
 
         stock_list_json = list(map(lambda x: vars(x), stock_list_obj))
-        with open('project/tdd_stock/db/stock_db.json','w') as json_db:
+        with open(db_path,'w') as json_db:
             json.dump(stock_list_json,json_db,sort_keys=True, indent=4, separators=(',', ': '))
             
 ```
@@ -746,7 +746,7 @@ def save_stock(stock_to_save):
         stock_list_obj.append(stock_obj)
 
         stock_list_json = list(map(lambda x: vars(x), stock_list_obj))
-        with open('project/tdd_stock/db/stock_db.json','w') as json_db:
+        with open(db_path,'w') as json_db:
             json.dump(stock_list_json,json_db,sort_keys=True, indent=4, separators=(',', ': '))   
 ```
 
@@ -949,5 +949,9 @@ We can now start up the application on the server and try some curl commands.
 
 
 ```bash
-    FLASK_APP=app/app.py python3 -m flask run
+    FLASK_APP=app/app.py python3 -m flask run --host=0.0.0.0
 ``` 
+
+Open a seperate browser window and go to : http://funny-panda.devopsplayground.org:5000/stock/all_stocks/
+
+You should see all the stocks displayed
