@@ -12,6 +12,7 @@ from app.models import Stock
 
 
 db_path = 'project/Hands-on-Test-Driven-Development-TDD-using-Python/db/stock_db.json'
+db_path = 'db/stock_db.json'
 
 def get_all_stocks():
 

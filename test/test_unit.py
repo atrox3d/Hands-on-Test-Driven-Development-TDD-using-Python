@@ -4,14 +4,15 @@ import requests
 import json
 
 from app.models import Stock
-# from app.components import get_all_stocks
+from app.components import get_all_stocks
 
 
 class StockTestClass(TestCase):
 
     db_path = 'project/Hands-on-Test-Driven-Development-TDD-using-Python/db/stock_db.json'
-    test_stock = 'project/Hands-on-Test-Driven-Development-TDD-using-Python/db/stock_db.json'
-
+    # test_stock = 'project/Hands-on-Test-Driven-Development-TDD-using-Python/db/stock_db.json'
+    db_path = 'db/stock_db.json'
+    
     def test_get_all_stocks_returns_all(self):
         stocks = get_all_stocks()
 
