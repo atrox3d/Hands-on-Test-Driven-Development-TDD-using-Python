@@ -26,8 +26,10 @@ def get_all_stocks():
 def get_stock_by_ticker(ticker_symbol) -> Stock:
     # with open(db_path) as dbfile:
     #     stocks_json = json.load(dbfile)
-    return [stock for stock in get_all_stocks() if stock.ticker_symbol == ticker_symbol][0]
-    
+    try:
+        return [stock for stock in get_all_stocks() if stock.ticker_symbol == ticker_symbol][0]
+    except IndexError:
+        return None
 
 # def save_stock(stock_to_save):
 #     with open(db_path,'r') as json_db:

@@ -27,9 +27,9 @@ class StockTestClass(TestCase):
         assert stock.ticker_symbol == 'MSFT'
         assert stock.name == 'Microsoft'
 
-    # def test_invalid_stock_not_found(self):
-    #     stock = get_stock_by_ticker("TSLA")
-    #     assert stock == None
+    def test_invalid_stock_not_found(self):
+        stock = get_stock_by_ticker("TSLA")
+        assert stock == None
 
 
     # def test_save_stock_success(self):

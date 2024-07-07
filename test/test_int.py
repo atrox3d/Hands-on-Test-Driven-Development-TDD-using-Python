@@ -34,16 +34,16 @@ class TestClass:
         assert len(stocks_json) == 3
 
 
-    # def test_get_stock_by_ticker_integration(self):
+    def test_get_stock_by_ticker_integration(self):
 
-    #     response = self.client.get(
-    #         f"/stock/APPL/",
-    #         content_type="application/json"
-    #     )
+        response = self.client.get(
+            f"/stock/APPL/",
+            content_type="application/json"
+        )
 
-        # json_response = response.json
-        # stock = Stock(**json_response)
-        # assert stock.ticker_symbol == 'APPL'
+        json_response = response.json
+        stock = Stock(**json_response)
+        assert stock.ticker_symbol == 'APPL'
 
     # def test_get_stock_by_bad_ticker_integration(self):
 

@@ -1,17 +1,17 @@
 from flask import Flask, Response, app, jsonify, request
-from app.components import get_all_stocks
+from app.components import get_all_stocks, get_stock_by_ticker
 from app.models import Stock
 
 app = Flask(__name__)
 
 
-# @app.route("/stock/<ticker_symbol>/",methods=["GET"])
-# def get_stock_by_ticker_symbol(ticker_symbol):
-    
-#     # if stock:
-#     return jsonify(stock.__dict__)
-#     # else:
-#     #     return jsonify(None)
+@app.route("/stock/<ticker_symbol>/",methods=["GET"])
+def get_stock_by_ticker_symbol(ticker_symbol):
+    stock = get_stock_by_ticker(ticker_symbol)
+    # if stock:
+    return jsonify(stock.__dict__)
+    # else:
+    #     return jsonify(None)
 
 
 # @app.route("/stock/conversion/<ticker_symbol>/<conversion>", methods=["GET"])
