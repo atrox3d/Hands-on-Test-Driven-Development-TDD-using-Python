@@ -4,7 +4,7 @@ import requests
 import json
 
 from app.models import Stock
-from app.components import get_all_stocks
+from app.components import get_all_stocks, get_stock_by_ticker
 
 
 class StockTestClass(TestCase):
@@ -21,8 +21,11 @@ class StockTestClass(TestCase):
 
 
 
-    # def test_get_stock_by_ticker_returns_correct_stock(self):
-    #     pass
+    def test_get_stock_by_ticker_returns_correct_stock(self):
+        stock = get_stock_by_ticker('MSFT')
+
+        assert stock.ticker_symbol == 'MSFT'
+        assert stock.name == 'Microsoft'
 
     # def test_invalid_stock_not_found(self):
     #     stock = get_stock_by_ticker("TSLA")
