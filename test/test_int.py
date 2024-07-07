@@ -30,6 +30,8 @@ class TestClass:
         response = self.client.get("/stock/all_stocks/")
 
         assert response.status_code == 200
+        stocks_json = response.json
+        assert len(stocks_json) == 3
 
 
     # def test_get_stock_by_ticker_integration(self):
