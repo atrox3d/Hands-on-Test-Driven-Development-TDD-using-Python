@@ -17,6 +17,7 @@ class StockTestClass(TestCase):
         stocks = get_all_stocks()
         assert len(stocks) == 3
         assert stocks[0].analyst =='warren.buffet'
+        assert next(iter(stocks)).analyst =='warren.buffet'
 
 
 
