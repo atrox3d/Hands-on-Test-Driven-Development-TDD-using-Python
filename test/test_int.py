@@ -45,12 +45,15 @@ class TestClass:
         stock = Stock(**json_response)
         assert stock.ticker_symbol == 'APPL'
 
-    # def test_get_stock_by_bad_ticker_integration(self):
+    def test_get_stock_by_bad_ticker_integration(self):
 
-    #     response = self.client.get(
-    #         f"/stock/TSLA/",
-    #         content_type="application/json"
-    #     )
+        response = self.client.get(
+            f"/stock/TSLA/",
+            content_type="application/json"
+        )
+
+        assert response.status_code == 200
+        assert response.json == None
 
 
     # def test_add_stock_integration(self):

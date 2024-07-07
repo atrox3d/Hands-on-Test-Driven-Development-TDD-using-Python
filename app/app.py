@@ -8,10 +8,10 @@ app = Flask(__name__)
 @app.route("/stock/<ticker_symbol>/",methods=["GET"])
 def get_stock_by_ticker_symbol(ticker_symbol):
     stock = get_stock_by_ticker(ticker_symbol)
-    # if stock:
-    return jsonify(stock.__dict__)
-    # else:
-    #     return jsonify(None)
+    if stock:
+        return jsonify(stock.__dict__)
+    else:
+        return jsonify(None)
 
 
 # @app.route("/stock/conversion/<ticker_symbol>/<conversion>", methods=["GET"])
