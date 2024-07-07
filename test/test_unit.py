@@ -15,6 +15,8 @@ class StockTestClass(TestCase):
     
     def test_get_all_stocks_returns_all(self):
         stocks = get_all_stocks()
+        assert len(stocks) == 3
+        assert stocks[0].analyst =='warren.buffet'
 
 
 

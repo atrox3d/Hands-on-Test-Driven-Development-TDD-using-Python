@@ -15,9 +15,11 @@ db_path = 'project/Hands-on-Test-Driven-Development-TDD-using-Python/db/stock_db
 db_path = 'db/stock_db.json'
 
 def get_all_stocks():
-
     with open(db_path) as dbfile:
         stocks_json = json.load(dbfile)
+
+    stocks = [Stock(**stock) for stock in stocks_json]
+    return stocks
 
 
 
