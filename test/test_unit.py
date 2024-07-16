@@ -12,6 +12,7 @@ class StockTestClass(TestCase):
     db_path = 'project/Hands-on-Test-Driven-Development-TDD-using-Python/db/stock_db.json'
     # test_stock = 'project/Hands-on-Test-Driven-Development-TDD-using-Python/db/stock_db.json'
     db_path = 'db/stock_db.json'
+    test_stock = 'test/test_data/stock_test.json'
     
     def test_get_all_stocks_returns_all(self):
         stocks = get_all_stocks()
@@ -32,11 +33,12 @@ class StockTestClass(TestCase):
         assert stock == None
 
 
-    # def test_save_stock_success(self):
+    def test_save_stock_success(self):
 
-    #     with open(self.test_stock) as f:
-    #         stock_data = json.load(f)
-
+        with open(self.test_stock) as f:
+            stock_data = json.load(f)
+        save_stock(stock_data)
+        assert len(get_all_stocks()) == 4
 
 
     # def test_save_duplicate_stock_rejected(self):
